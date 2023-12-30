@@ -1,3 +1,52 @@
+<?php
+require_once "lib.php";
+
+session_start();
+
+$result ??= null;
+$fileNameArr ??= [];
+$extension = ['pdf', 'torrent', 'jpg'];
+
+if (isset($_FILES['userFile'])) {
+    //загружен ли файл?
+    foreach ($_FILES['userFile']['tmp_name'] as $file) {
+        isUpload($file);
+    }
+
+//проверка размера файла
+    foreach ($_FILES['userFile']['size'] as $size) {
+        sizeValidation($size, 5);
+    }
+
+//Проверка разширения файла
+    foreach ($_FILES['userFile']['name'] as $name) {
+        extensionValidation($name, $extension);
+
+    }
+//проверка наличия директории соответственно расширению файла
+    foreach ($_FILES['userFile']['name'] as $key => $name) {
+        $fileExtensions = explode('.', $name);
+        $pathDir = $_SERVER['DOCUMENT_ROOT'] . '/test/upload/';
+        $absolutPathDir = $pathDir . $fileExtensions[(count($fileExtensions) - 1)];
+
+        if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
+
+        //поиск дубликатов
+//    searchDuplicates($name,$absolutPathDir);
+
+        //копирование файла в директорию
+        $tmpFile = $_FILES['userFile']['tmp_name'][$key];
+        $newNameFile = $_FILES['userFile']['name'][$key];
+        array_push($fileNameArr, $newNameFile);
+        if (copy($tmpFile, ($absolutPathDir . '/' . $newNameFile))) {
+            $result .= "$newNameFile - <strong>Loading complete</strong><br>";
+        }
+    }
+}
+//установка источника для индекса
+$_SESSION['origin'] = 'index';
+$_SESSION['fileNameArr'] = $fileNameArr;
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,44 +58,23 @@
 </head>
 <body>
     <h2>Загрузите ваш файл на сервер</h2>
-    <form action="index.php" method="POST" enctype="multipart/form-data">
+    <p>Возможные рacширения файлов:</p><?php
+    echo "<strong>";
+    foreach ($extension as $v){
+        echo "$v, ";
+    }
+    echo "</strong>"
+    ?>
+    <form action="action.php" method="POST" enctype="multipart/form-data">
         <input multiple name="userFile[]" type="file" placeholder="Ваш файл">
         <br>
         <input type="submit" name="submit">
     </form>
+    <?php
+
+        echo '--------------------------------------------';
+        echo '<br>';
+        showThree('upload');
+    ?>
 </body>
 </html>
-<?php
-
-echo $_SERVER['DOCUMENT_ROOT'];
-
-//загружен ли файл
-foreach ($_FILES['userFile']['tmp_name'] as $value) {
-    if (!is_uploaded_file($value)) {
-        exit('Upload file error');
-    }
-}
-
-//проверка размера файла
-foreach ($_FILES['userFile']['size'] as $value) {
-    if ($value > (5 * 1024 * 1024)) {
-        exit('File is bigger 5Mb');
-    }
-}
-
-//проверка наличия директории соответственно расширению файла
-foreach ($_FILES['userFile']['name'] as $key => $value){
-    $fileExtensions = explode('.',$value);
-    $pathDir = $_SERVER['DOCUMENT_ROOT'] .'/test/upload/';
-    $absolutPath = $pathDir . $fileExtensions[(count($fileExtensions)-1)];
-    if (!is_dir($absolutPath)) mkdir($absolutPath);
-
-//копирование файла в директорию
-    $tmpFile = $_FILES['userFile']['tmp_name'][$key];
-    $newNameFile = $_FILES['userFile']['name'][$key];
-    copy($tmpFile, $newNameFile);
-    move_uploaded_file($newNameFile,$absolutPath  . '/');
-}
-echo "<pre>";
-print_r($_FILES);
-echo "</pre>";

@@ -1,17 +1,14 @@
 <?php
+    require_once 'lib.php';
 
-echo "<pre>";
-print_r($_SERVER);
-echo "</pre>";
+    session_start();
 
-$urlStr = $_SERVER['SCRIPT_NAME'];
-$scriptName = explode('/',$urlStr);
+    //запрет прямого доступа
+    $urlStr = $_SERVER['SCRIPT_NAME'];
+    $scriptName = explode('/',$urlStr);
+    if (($scriptName[count($scriptName)-1]) == 'action.php' && !isset($_SESSION['origin']))  header('Location: /test/errors/403.html');
 
-if (true) return;
-else if (($scriptName[count($scriptName)-1]) == 'action.php') {
-    header('Location: /test/errors/403.html');
-}
-
+    $fileNameArr = $_SESSION['fileNameArr'];
 ?>
 <!doctype html>
 <html lang="en">
@@ -23,6 +20,19 @@ else if (($scriptName[count($scriptName)-1]) == 'action.php') {
     <title>Document</title>
 </head>
 <body>
-<h1>Action.php</h1>
+    <strong><h2>Загружены данные файлы:</h2></strong>
+    <br>
+<?php
+    foreach ($fileNameArr as $file){
+        echo $file . '<br>';
+    }
+?>
 </body>
 </html>
+<?php
+unset($_SESSION['origin']);
+//unset($_SESSION['fileNameArr']);
+
+echo '<pre>';
+print_r($_SESSION);
+echo '<pre>';
