@@ -32,7 +32,7 @@ if (isset($_FILES['userFile'])) {
         if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
 
         //поиск дубликатов
-//    searchDuplicates($name,$absolutPathDir);
+        //searchDuplicates($name,$absolutPathDir);
 
         //копирование файла в директорию
         $tmpFile = $_FILES['userFile']['tmp_name'][$key];

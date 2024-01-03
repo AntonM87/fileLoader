@@ -31,8 +31,4 @@
 </html>
 <?php
 unset($_SESSION['origin']);
-//unset($_SESSION['fileNameArr']);
 
-echo '<pre>';
-print_r($_SESSION);
-echo '<pre>';
