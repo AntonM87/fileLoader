@@ -1,6 +1,6 @@
 <?php
 //Вывод каталогов и файлов после формы
-function showThree($dir)
+function showThree($dir) : void
 {
     $files = array_diff(scandir($dir), ['..', '.']);
     foreach ($files as $file)
@@ -19,16 +19,15 @@ function showThree($dir)
 }
 
 //загружен ли файл?
-function isUpload(string $fileName) : void
+function isUpload($file) : void
 {
-    if (!is_uploaded_file($fileName)) {
-        exit('Upload file error');
-    }
+        if (!is_uploaded_file($file)) exit("Upload file error - $file");
 }
+
 //проверка размера файла
  function sizeValidation(int $fileSize, int $limit) : void
  {
-     if ($fileSize > ($fileSize * 1024 * 1024)) {
+     if ($fileSize > ($limit * 1024 * 1024)) {
          exit('File is bigger 5Mb');
      }
  }
@@ -49,10 +48,14 @@ function searchingAndCreatingDirectory(string $dir) : void
     if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
 }
 //Поиск дубликатов
-function searchDuplicates(string $nameFile, string $pathDir) : void
+function searchDuplicates(string $nameFile, string $pathDir, array &$errors) : bool
 {
     $files = scandir($pathDir);
     foreach ($files as $file){
-        if ($file == $nameFile) exit("File already exists - $file");
+        if ($file == $nameFile){
+            $errors[] = "<strong>File already exists</strong> - $file";
+            return true;
+        }
     }
+    return false;
 }

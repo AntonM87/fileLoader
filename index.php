@@ -1,51 +1,11 @@
 <?php
 require_once "lib.php";
-
 session_start();
 
-$result ??= null;
-$fileNameArr ??= [];
-$extension = ['pdf', 'torrent', 'jpg'];
+$extensions = $_SESSION['extensions'] = ['pdf', 'torrent', 'jpg'];
 
-if (isset($_FILES['userFile'])) {
-    //загружен ли файл?
-    foreach ($_FILES['userFile']['tmp_name'] as $file) {
-        isUpload($file);
-    }
-
-//проверка размера файла
-    foreach ($_FILES['userFile']['size'] as $size) {
-        sizeValidation($size, 5);
-    }
-
-//Проверка разширения файла
-    foreach ($_FILES['userFile']['name'] as $name) {
-        extensionValidation($name, $extension);
-
-    }
-//проверка наличия директории соответственно расширению файла
-    foreach ($_FILES['userFile']['name'] as $key => $name) {
-        $fileExtensions = explode('.', $name);
-        $pathDir = $_SERVER['DOCUMENT_ROOT'] . '/test/upload/';
-        $absolutPathDir = $pathDir . $fileExtensions[(count($fileExtensions) - 1)];
-
-        if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
-
-        //поиск дубликатов
-        //searchDuplicates($name,$absolutPathDir);
-
-        //копирование файла в директорию
-        $tmpFile = $_FILES['userFile']['tmp_name'][$key];
-        $newNameFile = $_FILES['userFile']['name'][$key];
-        array_push($fileNameArr, $newNameFile);
-        if (copy($tmpFile, ($absolutPathDir . '/' . $newNameFile))) {
-            $result .= "$newNameFile - <strong>Loading complete</strong><br>";
-        }
-    }
-}
 //установка источника для индекса
 $_SESSION['origin'] = 'index';
-$_SESSION['fileNameArr'] = $fileNameArr;
 ?>
 <!doctype html>
 <html lang="en">
@@ -60,7 +20,7 @@ $_SESSION['fileNameArr'] = $fileNameArr;
     <h2>Загрузите ваш файл на сервер</h2>
     <p>Возможные рacширения файлов:</p><?php
     echo "<strong>";
-    foreach ($extension as $v){
+    foreach ($extensions as $v){
         echo "$v, ";
     }
     echo "</strong>"
