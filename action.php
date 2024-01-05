@@ -12,30 +12,26 @@
     $fileNameArr ??= [];
     $errors ??= [];
     $extensions = $_SESSION['extensions'];
+
+    $tmpNameArr = $_FILES['userFile']['tmp_name'];
+    $sizeArr  = $_FILES['userFile']['size'];
+    $nameArr = $_FILES['userFile']['name'];
+
     if (isset($_FILES['userFile'])) {
-//загружен ли файл?
-        foreach ($_FILES['userFile']['tmp_name'] as $file) {
-            isUpload($file);
-        }
 
-//проверка размера файла
-        foreach ($_FILES['userFile']['size'] as $size) {
-            sizeValidation($size, 5);
-        }
+        foreach ($tmpNameArr as $key => $val) {
+            isUpload($val); //загружен ли файл?
+            sizeValidation($sizeArr[$key], 5); //проверка размера файла
+            extensionValidation($nameArr[$key], $extensions); //Проверка разширения файла
 
-//Проверка разширения файла
-        foreach ($_FILES['userFile']['name'] as $key => $name) {
-            extensionValidation($name, $extensions);
-
-//проверка наличия директории соответственно расширению файла
-            $fileExtensions = explode('.', $name);
+            //проверка наличия директории соответственно расширению файла
+            $fileExtensions = explode('.', $_FILES['userFile']['name'][$key]);
             $pathDir = $_SERVER['DOCUMENT_ROOT'] . '/test/upload/';
             $absolutPathDir = $pathDir . $fileExtensions[(count($fileExtensions) - 1)];
 
             if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
 
-            //поиск дубликатов
-            if (!searchDuplicates($name, $absolutPathDir, $errors)) {
+            if (!searchDuplicates($_FILES['userFile']['name'][$key], $absolutPathDir, $errors)) {
                 //копирование файла в директорию
                 $tmpFile = $_FILES['userFile']['tmp_name'][$key];
                 $newNameFile = $_FILES['userFile']['name'][$key];
@@ -45,9 +41,7 @@
                 }
             }
         }
-
     }
-
 ?>
 <!doctype html>
 <html lang="en">
