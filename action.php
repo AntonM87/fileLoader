@@ -12,6 +12,7 @@
     $fileNameArr ??= [];
     $errors ??= [];
     $extensions = $_SESSION['extensions'];
+    $pathDir = $_SERVER['DOCUMENT_ROOT'] . '/test/upload/';
 
     $tmpNameArr = $_FILES['userFile']['tmp_name'];
     $sizeArr  = $_FILES['userFile']['size'];
@@ -20,13 +21,12 @@
     if (isset($_FILES['userFile'])) {
 
         foreach ($tmpNameArr as $key => $val) {
-            isUpload($val); //загружен ли файл?
-            sizeValidation($sizeArr[$key], 5); //проверка размера файла
-            extensionValidation($nameArr[$key], $extensions); //Проверка разширения файла
+            isFileAlreadyUploaded($val, $errors); //загружен ли файл?
+            isFileSizeValid($sizeArr[$key], 5, $errors,$nameArr[$key]); //проверка размера файла
+            isFileExtensionValid($nameArr[$key], $extensions, $errors); //Проверка разширения файла
 
             //проверка наличия директории соответственно расширению файла
             $fileExtensions = explode('.', $_FILES['userFile']['name'][$key]);
-            $pathDir = $_SERVER['DOCUMENT_ROOT'] . '/test/upload/';
             $absolutPathDir = $pathDir . $fileExtensions[(count($fileExtensions) - 1)];
 
             if (!is_dir($absolutPathDir)) mkdir($absolutPathDir);
@@ -37,7 +37,7 @@
                 $newNameFile = $_FILES['userFile']['name'][$key];
                 $fileNameArr[] = $newNameFile;
                 if (copy($tmpFile, ($absolutPathDir . '/' . $newNameFile))) {
-                    $result .= $newNameFile;
+                    $result .= $newNameFile . '<br>';
                 }
             }
         }
@@ -58,7 +58,18 @@
 <?php
     echo $result;
     echo '<br>';
-    foreach ($errors as $error) echo $error . "<br>"
+    echo '<br>';
+
+
+    if (!empty($errors)){
+        echo '-----------------------';
+
+        echo '<br>';
+        echo "Errors:";
+        echo '<br>';
+        foreach ($errors as $error) echo $error . "<br>";
+    }
+
 ?>
 </body>
 </html>

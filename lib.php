@@ -19,24 +19,29 @@ function showThree($dir) : void
 }
 
 //загружен ли файл?
-function isUpload($file) : void
+function isFileAlreadyUploaded($file, array &$errors) : void
 {
-        if (!is_uploaded_file($file)) exit("Upload file error - $file");
+        if (!is_uploaded_file($file)) {
+            $errors[] = "Upload file error - $file";
+        }
 }
 
 //проверка размера файла
- function sizeValidation(int $fileSize, int $limit) : void
+ function isFileSizeValid(int $fileSize, int $limit, array &$errors, string $fileName) : void
  {
      if ($fileSize > ($limit * 1024 * 1024)) {
-         exit('File is bigger 5Mb');
+         $errors[] = "$fileName - File is bigger 5Mb";
      }
  }
 //Проверка разширения файла
-function extensionValidation (string $fullFileName, array $extensionArr) : void
+function isFileExtensionValid (string $fullFileName, array $extensionArr, array &$errors) : void
 {
     $explodeStrArr = explode('.',$fullFileName);
     $extension = $explodeStrArr[count($explodeStrArr)-1];
-    if (!in_array($extension,$extensionArr)) exit('This extension is not allowed');
+
+    if (!in_array($extension,$extensionArr)){
+        $errors[] = "$fullFileName - invalid extension";
+    }
 }
 
 //проверка наличия директории соответственно расширению файла или ее создание
