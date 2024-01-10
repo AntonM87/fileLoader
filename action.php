@@ -4,9 +4,7 @@
     session_start();
 
     //запрет прямого доступа к экшон
-    $urlStr = $_SERVER['SCRIPT_NAME'];
-    $scriptName = explode('/',$urlStr);
-    if (($scriptName[count($scriptName)-1]) == 'action.php' && !isset($_SESSION['origin']))  header('Location: /test/errors/403.html');
+    if (empty($_SERVER['HTTP_REFERER']))  header('Location: /test/errors/403.html');
 
     $result ??= null;
     $fileNameArr ??= [];
@@ -18,7 +16,7 @@
     $sizeArr  = $userFile['size'];
     $nameArr = $userFile['name'];
 
-    $uploadStatusList ??= [];
+    $uploadStatusList = [];
 
     if (isset($userFile)) {
 
@@ -84,5 +82,4 @@
 </body>
 </html>
 <?php
-unset($_SESSION['origin']);
 

@@ -21,19 +21,13 @@ function showThree($dir) : void
 //загружен ли файл?
 function isFileAlreadyUploaded($file) : bool
 {
-        if (is_uploaded_file($file)) {
-            return true;
-        }
-        return false;
+        return is_uploaded_file($file);
 }
 
 //проверка размера файла
  function isFileSizeValid(int $fileSize, int $limit) : bool
  {
-     if ($fileSize < ($limit * 1024 * 1024)) {
-         return true;
-     }
-     return false;
+     return $fileSize < ($limit * 1024 * 1024);
  }
 
 //Проверка разширения файла
@@ -42,10 +36,7 @@ function isFileExtensionValid (string $fullFileName, array $extensions) : bool
     $explodeStrArr = explode('.',$fullFileName);
     $extension = $explodeStrArr[count($explodeStrArr)-1];
 
-    if (in_array($extension,$extensions)){
-        return true;
-    }
-    return false;
+    return in_array($extension,$extensions);
 }
 
 //проверка наличия директории соответственно расширению файла или ее создание
@@ -62,11 +53,11 @@ function searchDuplicates(string $nameFile, string $pathDir, array &$uploadStatu
     $files = scandir($pathDir);
     foreach ($files as $file){
         if ($file == $nameFile){
-            $uploadStatusList[] = [
-                'status' => 'ERROR',
-                'errors' => "File already exists",
-                'name' => $file,
-            ];
+//            $uploadStatusList[] = [
+//                'status' => 'ERROR',
+//                'errors' => "File already exists",
+//                'name' => $file,
+//            ];
             return true;
         }
     }
@@ -74,7 +65,7 @@ function searchDuplicates(string $nameFile, string $pathDir, array &$uploadStatu
 }
 function validate($key, $val, $nameArr, $sizeArr) : array
 {
-    $result ??= [];
+    $result = [];
 
     if (!isFileAlreadyUploaded($val)) $result[] = "Upload file error";
 

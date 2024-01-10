@@ -4,8 +4,6 @@ session_start();
 
 $extensions = $_SESSION['extensions'] = ['pdf', 'torrent', 'jpg'];
 
-//установка источника для индекса
-$_SESSION['origin'] = 'index';
 ?>
 <!doctype html>
 <html lang="en">
