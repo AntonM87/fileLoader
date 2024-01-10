@@ -21,7 +21,7 @@ function showThree($dir) : void
 //загружен ли файл?
 function isFileAlreadyUploaded($file) : bool
 {
-        return is_uploaded_file($file);
+    return is_uploaded_file($file);
 }
 
 //проверка размера файла
